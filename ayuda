@@ -1,0 +1,1011 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <conio.h>
+
+
+
+double funcion(double x, double y) {
+    return -4 * x + 3 * y + 6; // Modifica esta función según tu ecuación diferencial euler
+}
+
+void euler(double x0, double y0, double h, double intervaloInicial, double intervaloFinal) {
+    double x = x0;
+    double y = y0;
+
+    printf("Paso\t\tValor de x\t\tValor de y\n");
+    printf("0\t\t%.4f\t\t%.4f\n", x, y);
+
+    int i;
+    for (i = 1; x <= intervaloFinal; i++) {
+        double f = funcion(x, y);
+        y = y + h * f;
+        x = x + h;
+        printf("%d\t\t%.4f\t\t%.4f\n", i, x, y);
+
+        if (x >= intervaloFinal) {
+            break;
+        }
+    }
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+double f(double x, double y) {
+    return 9.77 * pow(2.71828, (-0.183) * x);//runge kutta
+}
+
+double rungeKutta(double x0, double y0, double h, double x) {
+    double k1, k2, k3, k4;
+    double y = y0;
+
+    while (x0 < x) {
+        k1 = h * f(x0, y);
+        k2 = h * f(x0 + h / 2, y + k1 / 2);
+        k3 = h * f(x0 + h / 2, y + k2 / 2);
+        k4 = h * f(x0 + h, y + k3);
+
+        y = y + (k1 + 2 * k2 + 2 * k3 + k4) / 6;
+        x0 = x0 + h;
+    }
+
+    return y;
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+// Definición de la función a integrar TRAPECIO
+double f(double x) {
+    return sin(x); // Cambia esta función según tus necesidades
+}
+
+// Función para calcular la integral por el método del trapecio
+double metodoTrapecio(double a, double b, int n) {
+    double h = (b - a) / n; // Tamaño del intervalo
+    double sum = 0.0;
+    int i;
+
+    sum += f(a) + f(b); // Suma los valores de los extremos
+
+    // Suma los valores en los puntos interiores
+    for (i = 1; i < n; i++) {
+        double x = a + i * h;
+        sum += 2 * f(x);
+    }
+
+    // Calcula la aproximación de la integral
+    double integral = (h / 2) * sum;
+    return integral;
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+double g(double x) {
+    return sin(x); // Cambia esta función según tus necesidades TRRRAPECIO MULTIPLE
+}
+
+// Función para calcular la integral por el método del trapecio en segmentos múltiples
+double metodoTrapecioSegmentosMultiples(double a, double b, int n) {
+    double h = (b - a) / n; // Tamaño del segmento
+    double sum = 0.0;
+    int i;
+
+    sum += g(a) + g(b); // Suma los valores de los extremos
+
+    // Suma los valores en los puntos interiores
+    for (i = 1; i < n; i++) {
+        double x = a + i * h;
+        sum += 2 * g(x);
+    }
+
+    // Calcula la aproximación de la integral
+    double integral = (h / 2) * sum;
+    return integral;
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+float funcion(float x) {
+    // Aquí debes definir la función que deseas integrar SIMPSON 1/3
+    // Puedes modificar esta función según tus necesidades
+    return sin(x);
+}
+
+float simpson_1_3(float a, float b, int n) {
+    float h = (b - a) / n;
+    float sum = funcion(a) + funcion(b);
+
+    for (int i = 1; i < n; i++) {
+        float x = a + i * h;
+        if (i % 2 == 0) {
+            sum += 2 * funcion(x);
+        } else {
+            sum += 4 * funcion(x);
+        }
+    }
+
+    return (h / 3) * sum;
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+
+double Q(double x) {
+    return -1 * sqrt(25 - x * x); // función a integrar SIMPSON 1/3 MULTIPLE
+}
+
+double simpson13Multiple(double a, double b, int n) {
+    double h = (b - a) / n;
+    double sum = Q(a) + Q(b);
+
+    // calcular la suma de los valores de la función evaluados en los puntos pares
+    for (int i = 2; i < n; i += 2) {
+        double x = a + i * h;
+        sum += 4 * Q(x);
+    }
+
+    // calcular la suma de los valores de la función evaluados en los puntos impares
+    for (int i = 1; i < n; i += 2) {
+        double x = a + i * h;
+        sum += 2 * Q(x);
+    }
+
+    // aplicar la fórmula de Simpson 1/3 múltiple
+    double integral = (h / 3) * sum;
+    return integral;
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Definición de la función a integrar SIMPSON 3/8
+double W(double x) {
+    return sin(x); // Cambia esta función según tus necesidades
+}
+
+// Función para calcular la integral por el método de Simpson 3/8
+double metodoSimpson38(double a, double b, int n) {
+    double h = (b - a) / n; // Tamaño del intervalo
+    double sum = W(a) + W(b); // Suma los valores de los extremos
+    int i;
+
+    // Suma los valores en los puntos interiores
+    for (i = 1; i < n; i++) {
+        double x = a + i * h;
+        if (i % 3 == 0) {
+            sum += 2 * W(x);
+        } else {
+            sum += 3 * W(x);
+        }
+    }
+
+    // Calcula la aproximación de la integral
+    double integral = (3 * h / 8) * sum;
+    return integral;
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+double funcion(double x) {
+    // Define aquí tu función
+    return x * x - 4;
+}
+
+double metodoSecante(double x0, double x1, double epsilon, int maxIter) {
+    double x2, f0, f1, f2;
+    int iter = 0;
+
+    do {
+        f0 = funcion(x0);
+        f1 = funcion(x1);
+
+        x2 = x1 - (f1 * (x1 - x0)) / (f1 - f0);
+        f2 = funcion(x2);
+
+        x0 = x1;
+        x1 = x2;
+
+        iter++;
+    } while (fabs(f2) > epsilon && iter < maxIter);
+
+    return x2;
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+double lagrangeInterpolation(double x[], double y[], int n, double xi) {
+    double result = 0.0;
+
+    for (int i = 0; i < n; i++) {
+        double term = y[i];
+
+        for (int j = 0; j < n; j++) {
+            if (j != i) {
+                term *= (xi - x[j]) / (x[i] - x[j]);
+            }
+        }
+
+        result += term;
+    }
+
+    return result;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+int main() {
+    int opcion_principal, opcion_secundaria;
+
+    printf("Paquete de software de metodos numericos, hecho por JFS\n");
+    printf("Bienvenido, este programa realiza distintos calculos con metodos numericos. \nPor favor, seleccione una opción digitando el numero:\n");
+    printf("1. Resolución de EDO\n");
+    printf("2. Integrracion Numerica\n");
+    printf("3. Error\n");
+    printf("4. Resolucion de ecuaciones lineales\n");
+    printf("5. Ecuaciones no lineales\n");
+    printf("6. interpolacion ajuste de datos\n");
+    printf("Opción: ");
+    scanf("%d", &opcion_principal);
+
+    switch (opcion_principal) {
+        case 1:
+            printf("\n\nPor favor, seleccione una opción digitando el número:\n");
+            printf("1. Método de Euler\n");
+            printf("2. Método de Runge-Kutta\n");
+            printf("Opción: ");
+            scanf("%d", &opcion_secundaria);
+
+            switch (opcion_secundaria) {
+                case 1:
+                    double x0, y0, h, intervaloInicial, intervaloFinal;
+
+                    printf("Bienvenido\n\nEste programa resuelve por el método de Euler\n\n");
+                    printf("La función a integrar es 9.77*e^(-0.183*x)\n");
+
+                    printf("Ingrese el valor inicial de x: ");
+                    scanf("%lf", &x0);
+
+                    printf("Ingrese el valor inicial de y: ");
+                    scanf("%lf", &y0);
+
+                    printf("Ingrese el tamaño del paso (h): ");
+                    scanf("%lf", &h);
+
+                    printf("Ingrese el valor inicial del intervalo: ");
+                    scanf("%lf", &intervaloInicial);
+
+                    printf("Ingrese el valor final del intervalo: ");
+                    scanf("%lf", &intervaloFinal);
+
+                    euler(x0, y0, h, intervaloInicial, intervaloFinal);
+                    
+                    break;
+                case 2:
+                    double x0, y0, x, h;
+
+                    printf("Bienvenido\n\nEste programa resuelve integrales definidas por el método de Runge-Kutta\n\n");
+                    printf("La función a integrar es 9.77*e^(-0.183*x)\n");
+
+                    printf("Ingrese la condición inicial x0: ");
+                    scanf("%lf", &x0);
+
+                    printf("Ingrese la condición inicial y0: ");
+                    scanf("%lf", &y0);
+
+                    printf("Ingrese el valor de x para el cual desea obtener y: ");
+                    scanf("%lf", &x);
+
+                    printf("Ingrese el tamaño del paso de integración h: ");
+                    scanf("%lf", &h);
+
+                    double result = rungeKutta(x0, y0, h, x);
+                    printf("El valor de y en x = %.2lf es %.4lf\n", x, result);
+                                                          
+                    break;
+                default:
+                    printf("Opción secundaria inválida.\n");
+                    break;
+            }
+            break;
+
+        case 2:
+			printf("\n\nPor favor, seleccione una opción digitando el número:\n");
+       	 	printf("1. Método del trapecio\n");
+       	 	printf("2. Método del trapecio en segmentos multiples \n");
+        	printf("3. Método de simpson 1/3\n");
+        	printf("4. Método de simpson 1/3 multiple\n");
+        	printf("5. Método de simpson 3/8\n");
+        	printf("Opción: ");
+            scanf("%d", &opcion_secundaria);
+
+            switch (opcion_secundaria) {
+                case 1:
+                	
+   				double a, b; // Límites de integración
+    			int n; // Número de intervalos
+
+    			// Solicitar los límites de integración al usuario
+    			printf("Bienvenido\n\nEste programa resuelve por el método del trapecio\n\n");
+                printf("La función a integrar es sen(x)\n");
+				printf("Ingrese el límite inferior de integración: ");
+    			scanf("%lf", &a);
+   				printf("Ingrese el límite superior de integración: ");
+    			scanf("%lf", &b);
+
+    			// Solicitar el número de intervalos al usuario
+   				printf("Ingrese el número de intervalos: ");
+    			scanf("%d", &n);
+
+    			// Calcular la aproximación de la integral usando el método del trapecio
+    			double integral = metodoTrapecio(a, b, n);
+
+    			// Mostrar el resultado
+    			printf("La aproximación de la integral es: %lf\n", integral);
+                    
+                    break;
+                case 2:
+                	
+				double a, b; // Límites de integración
+    			int n; // Número de segmentos
+
+    			// Solicitar los límites de integración al usuario
+				printf("Bienvenido\n\nEste programa resuelve por el método del trapecio de segmentos multiples\n\n");
+                printf("La función a integrar es sen(x)\n");
+				printf("Ingrese el límite inferior de integración: ");
+    			scanf("%lf", &a);
+    			printf("Ingrese el límite superior de integración: ");
+    			scanf("%lf", &b);
+
+   				// Solicitar el número de segmentos al usuario
+    			printf("Ingrese el número de segmentos: ");
+    			scanf("%d", &n);
+
+    			// Calcular la aproximación de la integral usando el método del trapecio en segmentos múltiples
+    			double integral = metodoTrapecioSegmentosMultiples(a, b, n);
+
+    			// Mostrar el resultado
+    			printf("La aproximación de la integral es: %lf\n", integral);	
+                    
+                    break;
+                case 3:
+                	
+				float limite_inferior, limite_superior;
+    			int num_intervalos;
+   				float valor_real;
+
+    			printf("Bienvenido \n\nEste programa resuelve integrales definidas por el metodo de Simpson 1/3\n\n");
+    			printf("La funcion a integrar es sen(x)\n\n");
+
+    			printf("Ingrese el límite inferior: ");
+    			scanf("%f", &limite_inferior);
+
+    			printf("Ingrese el límite superior: ");
+    			scanf("%f", &limite_superior);
+
+    			printf("Ingrese el número de intervalos: ");
+   				scanf("%d", &num_intervalos);
+
+    			float resultado = simpson_1_3(limite_inferior, limite_superior, num_intervalos);
+
+    			printf("El resultado de la integral es: %.4f\n", resultado);
+                    
+                    break;
+                case 4:
+                	
+				double a, b;
+    			int n;
+
+    			// solicitar al usuario los límites del intervalo de integración y el número de intervalos
+    			printf("Bienvenido \n\nEste programa resuelve integrales definidas por el metodo de Simpson 1/3 mutiple\n\n");
+    			printf("La funcion a integrar es -(25-x^2)^1/2 \n\n");
+    			printf("Ingrese el limite inferior del intervalo: ");
+    			scanf("%lf", &a);
+
+    			printf("Ingrese el limite superior del intervalo: ");
+    			scanf("%lf", &b);
+
+    			printf("Ingrese el numero de intervalos (debe ser un numero par): ");
+    			scanf("%d", &n);
+
+    			// verificar que el número de intervalos sea par
+    			if (n % 2 != 0) {
+        		printf("El numero de intervalos debe ser par. Intente nuevamente.\n");
+        		return 1;
+    			}
+
+    			// calcular la aproximación de la integral utilizando el método de Simpson 1/3 múltiple
+    			double resultado = simpson13Multiple(a, b, n);
+    			printf("El resultado de la integral es: %lf\n", resultado);	
+                    
+                    break;
+                case 5:
+                	
+				double a, b; // Límites de integración
+    			int n; // Número de intervalos
+
+   				// Solicitar los límites de integración al usuario
+    			printf("Ingrese el límite inferior de integración: ");
+    			scanf("%lf", &a);
+    			printf("Ingrese el límite superior de integración: ");
+    			scanf("%lf", &b);
+
+    			// Solicitar el número de intervalos al usuario
+   				printf("Ingrese el número de intervalos (debe ser múltiplo de 3): ");
+    			scanf("%d", &n);
+
+    			// Verificar que el número de intervalos sea múltiplo de 3
+    			if (n % 3 != 0) {
+        		printf("El número de intervalos debe ser múltiplo de 3. Intente nuevamente.\n");
+        		return 1;
+    			}
+
+    			// Calcular la aproximación de la integral usando el método de Simpson 3/8
+    			double integral = metodoSimpson38(a, b, n);
+
+    			// Mostrar el resultado
+    			printf("La aproximación de la integral es: %lf\n", integral);
+                    
+                    break;
+                default:
+                    printf("Opción secundaria inválida.\n");
+                    break;
+            }
+            break;
+
+        case 3:
+			printf("\n\nPor favor, seleccione una opción digitando el número:\n");
+            printf("1. Error absoluto y relativo\n");
+            printf("2. Error redondeo 0.6666 \n");
+            printf("3. Error valor de euler con 4 y 5 terminos\n");
+            printf("4. Matriz mxn\n");
+            printf("5. Suma de matrices mxn\n");
+            printf("Opción: ");
+            scanf("%d", &opcion_secundaria);
+
+            switch (opcion_secundaria) {
+                case 1:
+                	
+                float x,w,z,errorabs,errorrel; 
+	
+				printf("Bienvenido ");
+				printf("Escribe el valor calculado: "); scanf("%f",&w);
+				printf("Escribe el valor verdadero: "); scanf("%f",&x);	
+	
+	
+				errorabs=x-w;
+				errorrel=((x-w)/x)*100;
+
+				printf("\nEl resultado absoluto es: %.2f",errorabs);
+				printf("\nEl resultado relativo es: %f",errorrel);
+                    
+                    break;
+                case 2:
+                	
+                float x,w,z,errorrel1,errorrel2,redondeob,redondeoa; 
+	
+				printf("Bienvenido ");
+
+
+				redondeob=ceil(.66666);
+				redondeoa=floor(.66666);
+				
+				printf("\nEl redondeo por exceso al entero mas proximo  es: %.0f",redondeob);
+				printf("\nEl redondeo al numero inferior inmediato es: %.0f",redondeoa);
+	
+
+				errorrel1=((0.66666-0)/0.66666)*100;
+				printf("\nEl resultado relativo por exceso es: %f",errorrel1);
+	
+				errorrel2=((1-0.66666)/0.66666)*100;
+				printf("\nEl resultado relativo al numero inferior es: %f",errorrel2);
+                    
+                    break;
+                case 3:
+                	
+                int i,n;
+				float e,e1,e2,errorrel1,errorrel2;
+
+				i=0;
+
+				while(i<=n){
+				printf("Digite un numero:"); scanf("%i",&n);
+				i++;
+
+
+				e=1+1+1/2+1/3+1/41;
+				e1=2.7083333;
+				e2=2.716666;	
+	
+				}
+				printf("\nEl numero e con 4 terminos es: %f",e1);	
+				printf("\nEl numero e con 5 terminos es: %f",e2);
+
+				errorrel1=((2.718281-e1)/2.718281)*100;
+				printf("\nEl resultado de e1 es: %f",errorrel1);
+	
+	
+				errorrel2=((2.718281-e2)/2.718281)*100;
+				printf("\nEl resultado de e2 es: %f",errorrel2);
+                    
+                    break;
+                case 4:
+                	
+				int i,j,m,n;
+
+				printf("Ingresa el tamaño de la matriz:\n");scanf("%d %d", &m,&n);
+	
+				int mat[m] [n];
+				for(i=0;i<m;i++)
+				{
+				for(j=0;j<n;j++)
+				{
+				printf("Ingresa el valor de la posicion %d %d\n: ",i+1,j+1);scanf("%d",&mat[i][j]);	
+				}
+				}	
+	
+				for(i=0;i<m;i++)
+				{
+				for(j=0;j<n;j++)	
+				{
+				printf("%d",mat[i][j]);
+				printf("\t");
+				}
+				printf("\n");
+				}	
+                    
+                    break;
+                case 5:
+                	
+				int filas,N=20,M=20,columnas,i,j,A[M][N],B[M][N],R[M][N];
+
+				printf("Programa que suma dos matrices mxn\n");
+				printf("Escribe numero de filas:");scanf("%d", &filas);
+				printf("Escribe numero de columnas:");scanf("%d", &columnas);
+	
+				for(i=0;i<filas;i++)
+				{
+				for(j=0;j<columnas;j++)
+				{
+				printf("Dame el elemento A[%d][%d]: ",i+1,j+1);scanf("%d",&A[i][j]);		
+				}
+				}	
+	
+				for(i=0;i<filas;i++)
+				{
+				for(j=0;j<columnas;j++)	
+				{
+				printf("Dame el elemento B[%d][%d]",i+1,j+1);scanf("%d",&B[i][j]);
+				}	
+				}
+
+				for(i=0;i<filas;i++)
+				{
+				for(j=0;j<columnas;j++)	
+				{
+				R[i][j]=A[i][j] + B[i][j];	
+				}
+	
+				}
+	
+				printf("\nLa suma es: \n");
+				for(i=0;i<filas;i++)
+				{
+				for(j=0;j<columnas;j++)	
+				{
+				printf("%d\t",R[i][j]);
+				}
+				printf("\n");
+				}
+                    
+                    break;
+                default:
+                    printf("Opción secundaria inválida.\n");
+                    break;
+            }
+            break;
+
+        case 4:
+			printf("\n\nPor favor, seleccione una opción digitando el número:\n");
+            printf("1. Problema matematico simple (paracaidista)\n");
+            printf("2. Gauss Jordan \n");
+            printf("3. Matriz inversa\n");
+            printf("4. Gauss Seidel\n");
+            printf("Opción: ");
+            scanf("%d", &opcion_secundaria);
+
+            switch (opcion_secundaria) {
+                case 1:
+                	
+			float x,x1,x2,x3,x4,x5,ecu;  
+	
+			printf("Bienvenido");
+			printf("\nIngrese el valor de la velocidad: "); scanf("%f",&x);
+	
+			ecu=x+2*(9.8-(0.1833*x));
+	
+			printf("El resultado es: %.2f",ecu);
+			
+			x1=ecu;
+	
+			ecu=x1+2*(9.8-(0.1833*x1));
+	
+			printf("\nEl resultado es: %.2f",ecu);
+	
+			x2=ecu;
+	
+			ecu=x2+2*(9.8-(0.1833*x2));
+	
+			printf("\nEl resultado es: %.2f",ecu);
+
+			x3=ecu;
+	
+			ecu=x3+2*(9.8-(0.1833*x3));
+	
+			printf("\nEl resultado es: %.2f",ecu);
+	
+			x4=ecu;
+	
+			ecu=x4+2*(9.8-(0.1833*x4));
+		
+			printf("\nEl resultado es: %.2f",ecu);
+	
+			x5=ecu;
+	
+			ecu=x5+2*(9.8-(0.1833*x5));
+	
+			printf("\nEl resultado es: %.2f",ecu);		
+                    
+                    break;
+                case 2:
+                	
+				int num_inc, i, j, k, x, y;
+
+				printf(" ** SISTEMAS DE ECUACIONES. METODO DE GAUSS-JORDAN V.1 **\n\n");
+				printf(" Di cuantas incognitas tienes: ");scanf(" %d", &num_inc);
+				float matriz[num_inc][num_inc+1], recu[1][num_inc+1], incog[num_inc], aux0, aux1, aux2, ayuda;
+				printf("\n Introduce los valores de tu sistema de ecuaciones en la matriz:\n\n");
+
+				for(i=0;i<num_inc;i++)//acomoda la matriz ingresada
+				{
+				for(j=0;j<num_inc+1;j++)
+				{
+				printf(" Fila %d, columna %d: ", i+1, j+1);
+				scanf(" %d", &k);
+				matriz[i][j] = k;
+				}
+				printf("\n");
+				}
+
+
+				printf("\n\n Tu sistema seria el siguiente: \n\n");
+
+
+				for(i=0;i<num_inc;i++) //imprime la matriz al usuario
+				{
+				for(j=0;j<num_inc+1;j++)
+				{
+				printf(" %.2f ", matriz[i][j]);
+				}
+				printf("\n");
+				}
+
+
+				for(i=0;i<num_inc-1;i++)
+				{
+				aux1 = matriz[i][i];
+				for(j=i+1;j<num_inc;j++)
+				{
+				aux2 = matriz[j][i];
+				for(k=i;k<num_inc+1;k++)
+				{
+				aux0 = matriz[i][k];
+				recu[0][k] = aux0;
+				aux0 = aux0*aux2*(-1);
+				matriz[i][k] = aux0;
+				aux0 = matriz[j][k];
+				aux0 = aux0*aux1*1;
+				matriz[j][k] = aux0;
+				}
+				for(y=0;y<num_inc+1;y++)
+				{
+				aux0 = matriz[i][y] + matriz[j][y];
+				matriz[j][y] = aux0;
+				}
+				for(x=i;x<num_inc+1;x++)
+				{
+				aux0 = recu[0][x];
+				matriz[i][x] = aux0;
+				}	
+				}
+				}
+
+
+				printf("\n\n Tu sistema triangulado seria el siguiente: \n\n");
+	
+
+				for(i=0;i<num_inc;i++) //ya obtenida la forma de la matriz toma el pivote y a raiz de este empieza a resolver la matriz logrando que los numeros abajo del pivote sean 0
+				{
+				for(j=0;j<num_inc+1;j++)
+				{
+				printf(" %.2f ", matriz[i][j]);
+				}
+				printf("\n");
+				}
+
+
+				k=1;
+				x=0;
+
+
+				for(i=num_inc-1;i>=0;i--)  //resuelve toda la matriz
+				{
+				aux0 = matriz[i][i];
+				aux1 = matriz[i][i+k];
+				if(k==1)
+				{
+				aux2 = aux1/aux0;
+				incog[x] = aux2;
+				for(j=num_inc-1;j>=0;j--)
+				{
+				ayuda = matriz[j][num_inc-k];
+				ayuda = ayuda*aux2;
+				matriz[j][num_inc-k] = ayuda;
+				}
+				k++;
+				x++;
+				}
+				else
+				{
+				for(y=i+1;y<num_inc;y++)
+				{
+				ayuda = matriz[i][y];
+				aux1 = aux1-ayuda;
+				}
+				aux2 = aux1/aux0;
+				incog[x] = aux2;
+				for(j=i;j>=0;j--)
+				{
+				ayuda = matriz[j][num_inc-k];
+				ayuda = ayuda*aux2;
+				matriz[j][num_inc-k] = ayuda;
+				}
+				k++;
+				x++;
+				}
+				}
+
+
+				printf("\n Tus incognitas son: ");
+
+
+				for(i=0;i<num_inc;i++) //imprime el resultado de la matriz, "vector b"
+				{
+				printf("\n Incognita numero %d: %.2f", i+1, incog[num_inc-i-1]);
+				}
+                    
+                    break;
+                case 3:
+                    printf("Ha elegido la opción secundaria 3.\n");
+                    break;
+                case 4:
+                	
+				int i,j,k,n,e=0.01;
+				float a[10][10],x[10];
+				float sum,temp,error,big;
+				printf("Introduce el numero de ecuaciones: ");
+				scanf("%d",&n) ;
+				printf("Introduce los coeficientes de las ecuaciones: \n");
+				for(i=1;i<=n;i++)
+				{
+				for(j=1;j<=n+1;j++)
+				{
+				printf("a[%d][%d]= ",i,j);
+				scanf("%f",&a[i][j]);
+				}
+				}
+				for(i=1;i<=n;i++)
+				{
+				x[i]=0;
+				}
+				do
+				{
+				big=0;
+				for(i=1;i<=n;i++)
+				{
+				sum=0;
+				for(j=1;j<=n;j++)
+				{
+				if(j!=i)
+				{
+				sum=sum+a[i][j]*x[j];
+				}
+				}
+				temp=(a[i][n+1]-sum)/a[i][i];
+				error=fabs(x[i]-temp);
+				if(error>big)
+				{
+				big=error;	
+				}
+				x[i]=temp;
+				printf("\nx[%d] =%f",i,x[i]);
+				}printf("\n");
+				}
+				while(big>=e);
+				printf("\n\n Converge en la solucion");
+				for(i=1;i<=n;i++)
+				{
+				printf("\nx[%d]=%f",i,x[i]);
+				}
+				getch();
+				}
+                    
+                    break;
+                default:
+                    printf("Opción secundaria inválida.\n");
+                    break;
+            }
+            break;
+
+        case 5:
+			printf("\n\nPor favor, seleccione una opción digitando el número:\n");
+            printf("1. Metodo de la biseccion\n");
+            printf("2. Metodo Newton Raphson \n");
+            printf("3. Metodo de la secante\n");
+            printf("Opción: ");
+            scanf("%d", &opcion_secundaria);
+
+            switch (opcion_secundaria) {
+                case 1:
+			 	#define RAIZ(x) ((x) * (x) * (x) * (x) - 2 * (x) * (x) + 3 * (x) - 5)                	
+				float xi,xu,xr,xa,ea;
+				int iteraciones;
+				printf("Metodo de la biseccion\n ")
+				printf("La funcion a calcular es x4-2x2+3x-5\n ")
+				printf("Limite superior de la raiz: ");scanf("%f",&xi);
+				printf("Limite inferior de la raiz: ");scanf("%f",&xu);
+			
+				iteraciones=0;
+				xa=0.0;
+				ea=0;
+				printf("%12s %10s %10s %10s %10s\n","iteraciones","Xi","Xu","Xr","Ea");
+	
+				do{
+				iteraciones++;
+				xr=(xi+xu)/2;
+				if(iteraciones>=2){
+				ea=((xr-xa)/xr)*100;
+				}
+				ea=fabs(ea);
+				printf("%12d %10f %10f %10f %10f\n",iteraciones,xi,xu,xr,fabs(ea));
+				xa=xr;
+				if(RAIZ(xr) > 0){
+				xi=xr;
+				}else{
+				xu=xr;
+				}
+				}while(ea>0.1 || (ea==0.0 && iteraciones == 1));
+				printf("\nLa raiz es de f(x) = x^2+x-3; es: %f\n",xr);
+				    
+                    break;
+                case 2:
+                	
+                int x;
+				float n,error;
+				printf("\n Calculando la raiz de x ln(x)-5 con un valor inicial de 4 \n\n");
+				n=4;
+				for(x=1;x<11;x++)
+				{
+				n=n-(((n*(log(n)))-5)/((log(n))+1));
+				error=100*((3.768679464-n)/3.768679464);
+				error=fabs(error);
+				printf("\n El nuevo valor inicial es %f y el error relativo es %f%%",n,error);
+		
+				}
+	
+				getch();
+				printf("\n");
+                    
+                    break;
+                case 3:
+  			  	double x0, x1, epsilon;
+    			int maxIter;
+    
+			    printf("Ingrese el valor inicial x0: ");
+    			scanf("%lf", &x0);
+	
+    			printf("Ingrese el valor inicial x1: ");
+    			scanf("%lf", &x1);
+
+    			printf("Ingrese la tolerancia epsilon: ");
+    			scanf("%lf", &epsilon);
+	
+			    printf("Ingrese el número máximo de iteraciones: ");
+    			scanf("%d", &maxIter);
+
+    			double raiz = metodoSecante(x0, x1, epsilon, maxIter);
+
+			    printf("La raíz aproximada es: %lf\n", raiz);
+
+                    break;
+                default:
+                    printf("Opción secundaria inválida.\n");
+                    break;
+            }
+            break;
+
+        case 6:
+			printf("\n\nPor favor, seleccione una opción digitando el número:\n");
+            printf("1. Interpolacion de Lagrange\n");
+            printf("2. Minimos cuadrados \n");
+            printf("Opción: ");
+            scanf("%d", &opcion_secundaria);
+
+            switch (opcion_secundaria) {
+                case 1:
+
+    			int n;
+    			printf("Ingrese el número de puntos de datos: ");
+    			scanf("%d", &n);
+
+			    double x[n], y[n];
+
+    			printf("Ingrese los valores de x:\n");
+    			for (int i = 0; i < n; i++) {
+        		printf("x[%d]: ", i);
+        		scanf("%lf", &x[i]);
+    			}
+	
+			    printf("Ingrese los valores de y:\n");
+    			for (int i = 0; i < n; i++) {
+        		printf("y[%d]: ", i);
+        		scanf("%lf", &y[i]);
+    			}
+
+    			double xi;
+    			printf("Ingrese el valor de xi para interpolar: ");
+    			scanf("%lf", &xi);
+
+    			double result = lagrangeInterpolation(x, y, n, xi);
+
+			    printf("El valor interpolado en xi es: %lf\n", result);
+
+                    break;
+                case 2:
+                	
+                int n, i;
+  				float x[100], y[100], sum_x = 0, sum_y = 0, sum_xy = 0, sum_x2 = 0, m, b;
+
+   				printf("Ingrese la cantidad de puntos que desea utilizar: ");
+   				scanf("%d", &n);
+
+   				printf("Ingrese los valores de x y y para cada punto:\n");
+   				for (i = 0; i < n; i++) {
+      			printf("x[%d] = ", i);
+      			scanf("%f", &x[i]);
+      			printf("y[%d] = ", i);
+      			scanf("%f", &y[i]);
+		
+      			sum_x += x[i];
+      			sum_y += y[i];
+      			sum_xy += x[i] * y[i];
+      			sum_x2 += x[i] * x[i];
+   				}
+
+   				printf("\nTabla de datos:\n");
+   				printf(" x    | y\n");
+   				printf("------|------\n");
+   				for (i = 0; i < n; i++) {
+      			printf(" %.2f | %.2f\n", x[i], y[i]);
+   				}
+
+			   m = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x * sum_x);
+   				b = (sum_y - m * sum_x) / n;
+
+   				printf("\nLa recta de mejor ajuste es: y = %.2fx + %.2f\n", m, b);
+                	
+                    break;
+                default:
+                    printf("Opción secundaria inválida.\n");
+                    break;
+            }
+            break;
+
+        default:
+            printf("Opción principal inválida.\n");
+            break;
+    }
+
+    return 0;
+}
